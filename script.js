@@ -75,13 +75,30 @@ function getWeatherIcon(weatherCode) {
     return iconPath + (weatherIcons[weatherCode] || 'default.svg');
 }
 
-function formatDate(date) {
-    const options = { 
+function formatDate(date, timezone) {
+    const timezoneOffset = timezone * 1000;
+    
+    const cityDate = new Date(date.getTime() + timezoneOffset + (date.getTimezoneOffset() * 60000));
+    
+    const dateOptions = { 
         day: 'numeric',
         month: 'short',
         year: 'numeric'
     };
-    return date.toLocaleDateString('pt-BR', options);
+    
+    const timeOptions = {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    };
+    
+    const formattedDate = cityDate.toLocaleDateString('pt-BR', dateOptions);
+    const formattedTime = cityDate.toLocaleTimeString('pt-BR', timeOptions);
+    
+    return {
+        date: formattedDate,
+        time: formattedTime
+    };
 }
 
 function formatShortDate(date) {
@@ -134,10 +151,15 @@ async function searchWeatherByCoords(lat, lon) {
 }
 
 function updateWeatherDisplay(currentData, forecastData) {
+
+    const cityDateTime = formatDate(new Date(), currentData.timezone);
     
     const locationDate = document.querySelector('.location-date');
     locationDate.children[0].querySelector('span').textContent = currentData.name;
-    locationDate.children[1].querySelector('span').textContent = formatDate(new Date());
+    locationDate.children[1].querySelector('span').textContent = `${cityDateTime.date} - ${cityDateTime.time}`;
+    
+    const sunriseDate = formatDate(new Date(currentData.sys.sunrise * 1000), currentData.timezone);
+    const sunsetDate = formatDate(new Date(currentData.sys.sunset * 1000), currentData.timezone);
     
     document.querySelector('.temperature').textContent = `${Math.round(currentData.main.temp)}°C`;
     document.querySelector('.condition').textContent = currentData.weather[0].description;
@@ -148,10 +170,8 @@ function updateWeatherDisplay(currentData, forecastData) {
     weatherDetails.children[2].querySelector('p').textContent = `${currentData.main.humidity}%`;
     weatherDetails.children[3].querySelector('p').textContent = `${(currentData.wind.speed * 3.6).toFixed(1)} km/h`;
     
-    const sunriseDate = new Date(currentData.sys.sunrise * 1000);
-    const sunsetDate = new Date(currentData.sys.sunset * 1000);
-    weatherDetails.children[4].querySelector('p').textContent = sunriseDate.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
-    weatherDetails.children[5].querySelector('p').textContent = sunsetDate.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+    weatherDetails.children[4].querySelector('p').textContent = sunriseDate.time;
+    weatherDetails.children[5].querySelector('p').textContent = sunsetDate.time;
 
     const weatherIcon = document.querySelector('.weather-icon');
     weatherIcon.innerHTML = `<img src="${getWeatherIcon(currentData.weather[0].icon)}" alt="${currentData.weather[0].description}">`;
@@ -171,7 +191,7 @@ function updateForecast(data) {
 
     dailyForecasts.forEach((day, index) => {
         if (forecastItems[index]) {
-            const date = new Date(day.dt * 1000);
+            const date = formatDate(new Date(day.dt * 1000), data.city.timezone);
             const spans = forecastItems[index].getElementsByTagName('span');
 
             spans[0].textContent = `${Math.round(day.main.temp)}°C`;
@@ -179,10 +199,10 @@ function updateForecast(data) {
 
             if (!spans[2]) {
                 const dateSpan = document.createElement('span');
-                dateSpan.textContent = formatShortDate(date);
+                dateSpan.textContent = formatShortDate(new Date(day.dt * 1000));
                 forecastItems[index].appendChild(dateSpan);
             } else {
-                spans[2].textContent = formatShortDate(date);
+                spans[2].textContent = formatShortDate(new Date(day.dt * 1000));
             }
 
             const existingIcon = forecastItems[index].querySelector('img');
@@ -204,87 +224,134 @@ function updateForecast(data) {
 }
 
 
-        function updateTemperatureChart(forecastData) {
-            const today = new Date();
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
+function updateTemperatureChart(forecastData) {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
-            const hourlyData = forecastData.list.filter(item => {
-                const itemDate = new Date(item.dt * 1000);
-                return itemDate >= today && itemDate < tomorrow;
-            });
+    const hourlyData = forecastData.list.filter(item => {
+        const itemDate = new Date(item.dt * 1000);
+        return itemDate >= today && itemDate < tomorrow;
+    });
 
-            const labels = hourlyData.map(item => {
-                const date = new Date(item.dt * 1000);
-                return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            });
+    const labels = hourlyData.map(item => {
+        const date = new Date(item.dt * 1000);
+        return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    });
 
-            const temperatures = hourlyData.map(item => item.main.temp);
+    const temperatures = hourlyData.map(item => item.main.temp);
 
-            const existingChart = Chart.getChart("temperatureChart");
-            if (existingChart) {
-                existingChart.destroy();
-            }
+    const existingChart = Chart.getChart("temperatureChart");
+    if (existingChart) {
+        existingChart.destroy();
+    }
 
-            const ctx = document.getElementById('temperatureChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Temperatura (°C)',
-                        data: temperatures,
-                        borderColor: '#FFA500',
-                        backgroundColor: 'rgba(255, 165, 0, 0.2)',
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#FFA500',
-                        pointBorderColor: '#FFF',
-                        pointRadius: 5,
-                        pointHoverRadius: 8
-                    }]
+    const ctx = document.getElementById('temperatureChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Previsão de Temperatura',
+                data: temperatures,
+                borderColor: '#1a365d', // Dark blue line
+                backgroundColor: 'rgba(26, 54, 93, 0.1)', // Light blue fill
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#1a365d',
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    right: 20,
+                    top: 30
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    align: 'center',
+                    labels: {
+                        color: '#1a365d',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        padding: 20,
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            labels: {
-                                color: '#FFF'
-                            }
-                        },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                            callbacks: {
-                                label: function(context) {
-                                    return `Temperatura: ${context.raw.toFixed(1)}°C`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            },
-                            ticks: {
-                                color: '#FFF',
-                                callback: function(value) {
-                                    return value + '°C';
-                                }
-                            }
-                        },
-                        x: {
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            },
-                            ticks: {
-                                color: '#FFF'
-                            }
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: 'rgba(26, 54, 93, 0.9)',
+                    titleColor: '#ffffff',
+                    bodyColor: '#ffffff',
+                    borderColor: '#1a365d',
+                    borderWidth: 1,
+                    padding: 10,
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.raw.toFixed(1)}°C`;
                         }
                     }
                 }
-            });
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    grid: {
+                        color: 'rgba(26, 54, 93, 0.1)',
+                        lineWidth: 1,
+                        drawBorder: false,
+                        drawTicks: true
+                    },
+                    ticks: {
+                        color: '#1a365d',
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        },
+                        padding: 10,
+                        callback: function(value) {
+                            return value + '°C';
+                        },
+                        stepSize: 5
+                    }
+                },
+                x: {
+                    grid: {
+                        display: true,
+                        color: 'rgba(26, 54, 93, 0.1)',
+                        lineWidth: 1,
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: '#1a365d',
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        },
+                        padding: 5,
+                        maxRotation: 0,
+                        autoSkip: true,
+                        maxTicksLimit: 12
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            }
         }
+    });
+}
