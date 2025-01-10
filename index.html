@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GetClima</title>
+    <link rel='shorcut icon' href="resources/img/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="styles.css?v=<?= time() ?>">
+</head>
+<body>
+    <div class="container">
+        <div class="left-section">
+
+            <div class="search-box">
+                <img src="resources/img/logo.webp" alt="Logo" class="logo">
+                <input type="text" placeholder="Digite o nome da cidade" class="search-input" id="cityInput">
+                <button class="search-button" onclick="searchWeather()">Buscar</button>
+            </div>
+
+            <div id="loading" class="loading hidden">
+                Carregando dados meteorológicos...
+            </div>
+
+            <div class="current-weather">
+                <div class="current-weather-grid">
+                    <div class="premier-weather">
+                        <div class="temperature"></div>
+                        <div class="condition"></div>
+                    </div>
+                    <div class="weather-icon"></div>
+                </div>
+                
+                <div class="location-date">
+                    <p><img src="resources/svg/pin.svg" alt="Location Pin"> <span></span></p>
+                    <p><img src="resources/svg/calendario.svg" alt="Location Pin"> <span></span></p>
+                </div>
+            </div>
+        </div>
+
+        
+
+        <div class="right-section">
+            <div class="forecast-item">
+                <div>
+                    <span class="forecast-temperature"></span>
+                    <span></span>
+                </div>
+                <span></span>
+            </div>
+            <div class="forecast-item">
+                <div>
+                    <span class="forecast-temperature"></span>
+                    <span></span>
+                </div>
+                <span></span>
+            </div>
+            <div class="forecast-item">
+                <div>
+                    <span class="forecast-temperature"></span>
+                    <span></span>
+                </div>
+                <span></span>
+            </div>
+            <div class="forecast-item">
+                <div>
+                    <span class="forecast-temperature"></span>
+                    <span></span>
+                </div>
+                <span></span>
+            </div>
+            <div class="forecast-item">
+                <div>
+                    <span class="forecast-temperature"></span>
+                    <span></span>
+                </div>
+                <span></span>
+            </div>
+        </div>
+
+
+        <div class="details-card">
+            <div class="weather-details">
+                <div class="weather-info-group">
+                    <h3>Temperatura Máx:</h3>
+                    <p></p>
+                </div>
+                
+                <div class="weather-info-group">
+                    <h3>Temperatura Mín:</h3>
+                    <p></p>
+                </div>
+                
+                <div class="weather-info-group">
+                    <h3>Umidade relativa do ar</h3>
+                    <p></p>
+                </div>
+                
+                <div class="weather-info-group">
+                    <h3>Velocidade do vento</h3>
+                    <p></p>
+                </div>
+                
+                <div class="weather-info-group">
+                    <h3>Nascer do Sol</h3>
+                    <p></p>
+                </div>
+                
+                <div class="weather-info-group">
+                    <h3>Por do Sol</h3>
+                    <p></p>
+                </div>
+            </div>
+            <div class="chart-container">
+                *Gráfico em Desenvolvimento*
+                <!-- <canvas id="temperatureChart"></canvas> -->
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
