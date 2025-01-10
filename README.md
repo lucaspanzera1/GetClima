@@ -9,6 +9,7 @@ Projeto desenvolvido com integração da API da <a href="https://openweathermap.
 ## Funcionalidades 📱
 #### 🌡️ Visualização da temperatura atual e previsão para os próximos dias;
 #### 💧 Informações como umidade, velocidade do vento e horários de nascer e pôr do sol;
+![GetClima](content/projeto.gif)
 
 ## Tecnologias Utilizadas 🛠️
 <div align="left">
