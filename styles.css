@@ -24,12 +24,14 @@ body {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    width: 100%;
 }
 
 .right-section {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: 100%;
 }
 
 .search-box {
@@ -39,6 +41,7 @@ body {
     display: flex;
     align-items: center;
     grid-column: 1 / 2;
+    width: 100%;
 }
 
 .search-input {
@@ -48,6 +51,8 @@ body {
     border-radius: 8px;
     margin: 0 10px;
     font-size: 16px;
+    width: 100%;
+    max-width: 100%;
 }
 
 .search-button {
@@ -58,6 +63,7 @@ body {
     border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
+    white-space: nowrap;
 }
 
 .current-weather {
@@ -67,34 +73,37 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    width: 100%;
 }
 
-.current-weather-grid{
+.current-weather-grid {
     display: flex;
     justify-content: space-between;
     border-bottom: 1px solid #072A4A;
     padding-bottom: 20px;
     margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .temperature {
-    font-size: 48px;
+    font-size: clamp(32px, 5vw, 48px);
     font-weight: 500;
     color: #072A4A;
 }
 
 .condition {
     color: #072A4A;
-    font-size: 24px;
+    font-size: clamp(18px, 3vw, 24px);
     font-weight: 400;
     text-transform: capitalize;
 }
-
 
 .location-date {
     color: #666;
     font-size: 14px;
 }
+
 .location-date img {
     vertical-align: middle;
     width: 16px;
@@ -108,7 +117,9 @@ body {
     justify-content: space-between;
     align-items: center;
     text-transform: capitalize;
+    width: 100%;
 }
+
 .forecast-temperature {
     font-weight: 500;
     font-size: 20px;
@@ -122,6 +133,7 @@ body {
     display: flex;
     gap: 20px;
     grid-column: 1 / -1;
+    width: 100%;
 }
 
 .weather-details {
@@ -139,7 +151,7 @@ body {
 
 .weather-details p {
     color: #072A4A;
-    font-size: 30px;
+    font-size: clamp(24px, 4vw, 30px);
     margin-bottom: 5px;
 }
 
@@ -149,19 +161,22 @@ body {
     border: 1px solid #eee;
     border-radius: 8px;
     padding: 10px;
+    min-height: 200px;
 }
 
 .logo {
     width: 40px;
     height: 40px;
 }
-.weather-info-group p{
+
+.weather-info-group p {
     font-weight: 500;
 }
 
 @media (max-width: 768px) {
     .container {
         grid-template-columns: 1fr;
+        width: 100%;
     }
     
     .details-card {
@@ -170,5 +185,41 @@ body {
     
     .search-box {
         grid-column: 1 / -1;
+    }
+
+    .right-section,
+    .left-section {
+        width: 100%;
+    }
+
+    .current-weather-grid {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .weather-details {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+
+    .chart-container {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    .search-box {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .search-input,
+    .search-button {
+        width: 100%;
+        margin: 0;
     }
 }
