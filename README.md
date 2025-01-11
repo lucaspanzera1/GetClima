@@ -1,5 +1,5 @@
 # GetClima 🌦️
-![License](https://img.shields.io/badge/lucaspanzera-GetClima-blue) ![Badge em Desenvolvimento](https://img.shields.io/badge/Status-Em%20Desenvolvimento-blue)</br>
+![License](https://img.shields.io/badge/lucaspanzera-GetClima-blue) ![Badge em Desenvolvimento](https://img.shields.io/badge/Status-Finalizado-blue)</br>
 Aplicação web que permite ao usuário pesquisar o clima de sua cidade de forma rápida e detalhada.
 
 ![GetClima](content/header.gif)
@@ -9,6 +9,7 @@ Projeto desenvolvido com integração da API da <a href="https://openweathermap.
 ## Funcionalidades 📱
 #### 🌡️ Visualização da temperatura atual e previsão para os próximos dias;
 #### 💧 Informações como umidade, velocidade do vento e horários de nascer e pôr do sol;
+#### 📈 Gráfico de temperatura durante o dia.
 ![GetClima](content/projeto.gif)
 
 ## Tecnologias Utilizadas 🛠️
@@ -34,6 +35,3 @@ $ cd GetClima
 # Abra o arquivo index.html em seu navegador
 ```
 
-## 🔄 Updates Futuros
-  * 📈 Gráfico de temperatura durante o dia.
-  * 📴 Modo Noturno.
